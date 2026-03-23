@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stey's Blog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: #1a1a1a;
+            --text-primary: #f5f5f0;
+            --text-secondary: #8a8a8a;
+            --accent: #c9a962;
+            --accent-hover: #dfc07a;
+            --border: #2a2a2a;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, var(--bg-primary) 0%, transparent 100%);
+            transition: background 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.75rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        
+
+        /* Hero Section */
+        .hero {
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(201, 169, 98, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-subtitle {
+            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.2s forwards;
+        }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.4s forwards;
+        }
+
+        .hero-description {
+            max-width: 500px;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 300;
+            line-height: 1.8;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.6s forwards;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeUp 1s ease 1s forwards;
+        }
+
+        .scroll-indicator::after {
+            content: '';
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--accent), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        /* Categories */
+        .categories {
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .category-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Products Section */
+        .products-section {
+            padding: 6rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .section-line {
+            width: 60px;
+            height: 1px;
+            background: var(--accent);
+            margin: 0 auto;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Product Card */
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .product-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .product-card:hover {
+            border-color: rgba(201, 169, 98, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .product-image {
+            position: relative;
+            aspect-ratio: 1;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.4rem 0.8rem;
+            background: var(--accent);
+            color: var(--bg-primary);
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .product-content {
+            padding: 1.5rem;
+        }
+
+        .product-category {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .product-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .product-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .product-btn:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 1rem;
+        }
+
+        .footer-text {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            max-width: 400px;
+            margin: 0 auto 2rem;
+        }
+
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-btn {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .footer-disclaimer {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .categories {
+                padding: 1.5rem;
+            }
+
+            .products-section {
+                padding: 3rem 1.5rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            footer {
+                padding: 3rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav id="navbar">
+        <a href="#" class="logo">Stey's Blog</a>
+    </nav>
+
+    <section class="hero">
+        <p class="hero-subtitle">Carefully Selected</p>
+        <h1 class="hero-title">Stey's Blog</h1>
+        <p class="hero-description">Discover refined finds and timeless essentials. Each piece is thoughtfully chosen for those who appreciate the finer things.</p>
+        <div class="scroll-indicator">Scroll</div>
+    </section>
+
+    <div class="categories" id="categories">
+        <button class="category-btn active" data-category="all">All</button>
+    </div>
+
+    <section class="products-section" id="products">
+        <div class="section-header">
+            <h2 class="section-title">Curated Selection</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="products-grid" id="products-grid"></div>
+    </section>
+
+    <footer id="about">
+        <div class="footer-logo">Stey's Blog</div>
+        <p class="footer-text">A personal collection of refined finds, shared with those who value quality and timeless elegance.</p>
+        <div class="footer-social">
+            <a href="https://www.tiktok.com/@blogofstey" class="social-btn" title="TikTok" aria-label="TikTok" target="_blank">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                </svg>
+            </a>
+            <a href="https://www.pinterest.com/blogofstey/" class="social-btn" title="Pinterest" aria-label="Pinterest" target="_blank">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0a12 12 0 0 0-4.37 23.17c-.1-.94-.2-2.4.04-3.44l1.4-5.96s-.36-.71-.36-1.76c0-1.65 1-2.88 2.21-2.88 1.04 0 1.55.78 1.55 1.72 0 1.05-.67 2.62-1.02 4.08-.29 1.22.61 2.22 1.8 2.22 2.16 0 3.82-2.28 3.82-5.57 0-2.91-2.09-4.95-5.08-4.95a5.73 5.73 0 0 0-5.98 5.77c0 1.14.44 2.36.99 3.03a.5.5 0 0 1 .12.59l-.37 1.49c-.05.2-.16.24-.37.14-1.39-.65-2.26-2.68-2.26-4.31 0-3.51 2.55-6.73 7.35-6.73 3.86 0 6.86 2.75 6.86 6.42 0 3.83-2.41 6.91-5.76 6.91-1.12 0-2.18-.58-2.54-1.27l-.69 2.58c-.25.96-.93 2.16-1.39 2.88a12 12 0 1 0 8.66 0c.61-.88 1.19-1.8 1.19-1.8a.5.5 0 0 1 .5-.12c.26.1.34.34.25.56l-.44 1.77z"/>
+                </svg>
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // ADD YOUR PRODUCTS HERE
+        // ============================================
+        // Format:
+        // {
+        //     title: "Product Name",
+        //     description: "Short description",
+        //     price: "$XX.XX",
+        //     image: "https://example.com/image.jpg",
+        //     link: "https://your-affiliate-link.com",
+        //     category: "Category Name",
+        //     badge: "Optional Badge"  // Leave empty "" for no badge
+        // }
+        // ============================================
+
+        const products = [
+            {
+                title: "Owala Freesip Water Bottle",
+                description: " Insulated Stainless Steel Water Bottle with Straw, BPA-Free Sports Water Bottle, Great for Travel, 24 Oz, Denim",
+                price: "$29.99",
+                image: "https://m.media-amazon.com/images/I/71U+Wi5yJhL._AC_SL1500_.jpg",
+                link: "https://amzn.to/3PhQ9YT",
+                category: "Sports and Outdoors",
+                badge: "Best Seller"
+            },
+            {
+                title: "Bread Box",
+                description: "Bread Boxes for Kitchen Counter Airtight, Time Recording Bread Storage Container with Lid, Bread Keeper for Homemade Bread, Toast, Bagel, Donut and Cookies, Grey ",
+                price: "$19.99",
+                image: "https://m.media-amazon.com/images/I/714DpVS29EL._AC_SL1500_.jpg",
+                link: "https://amzn.to/4bADedj",
+                category: "Kitchen",
+                badge: ""
+            },
+            {
+                title: "Bose QuietComfort Headphones",
+                description: "Wireless Bluetooth Headphones, Active Over Ear Noise Cancelling and Mic, USB-C Charging, Deep Bass, Up to 24 Hours of Playtime, Black ",
+                price: "$359.00",
+                image: "https://m.media-amazon.com/images/I/61j+d6wLCEL._AC_SL1500_.jpg",
+                link: "https://amzn.to/4bENVtP",
+                category: "Gaming",
+                badge: "Top Quality"
+            },
+            {
+                title: "Electric Lunch Box",
+                description: "Vingud 1.8L Replacement Stainless Steel Container Electric Lunch Box (Model: HD-J-0114), Food Container, Eco Safe & Healthy, Dishwasher Safe",
+                price: "$12.99",
+                image: "https://m.media-amazon.com/images/I/71AwDNc+VBL._AC_SL1500_.jpg",
+                link: "https://amzn.to/3NG696r",
+                category: "Kitchen",
+                badge: ""
+            },
+            {
+                title: "Amazon Echo Dot (5th Gen)",
+                description: "Vibrant sounding speaker, Designed for Alexa+, Great for bedrooms, dining rooms and offices, Charcoal",
+                price: "$49.99",
+                image: "https://m.media-amazon.com/images/I/71hNp8d9WvL._AC_SL1500_.jpg",
+                link: "https://amzn.to/41lcxD8",
+                category: "Home",
+                badge: "Editor's Pick"
+            },
+            {
+                title: "Amazon Fire TV Stick 4K Max",
+                description: "A streaming device, with AI-powered Fire TV Search, supports Wi-Fi 6E, free & live TV without cable or satellite ",
+                price: "$59.99",
+                image: "https://m.media-amazon.com/images/I/61KoIgcXSKL._AC_SL1500_.jpg",
+                link: "https://amzn.to/40JsenA",
+                category: "Home",
+                badge: ""
+            },
+            {
+                title: "Blink Mini",
+                description: "Compact indoor plug-in smart security camera, 1080p HD video, night vision, motion detection, two-way audio, easy set up, Works with Alexa – 1 camera (White)",
+                price: "$29.99",
+                image: "https://m.media-amazon.com/images/I/51vncWY4ROL._AC_SL1000_.jpg",
+                link: "https://amzn.to/4d4fgYS",
+                category: "Home Security",
+                badge: ""
+            },
+            {
+                title: "Apple AirTag (2nd Generation)",
+                description: "Tracker for Keychain, Wallet, and More; Locator with Sound; Simple One-Tap Setup with iPhone or iPad; Key Finder with up to 1.5X Precision Finding Range, Pack of 20",
+                price: "$29.00",
+                image: "https://m.media-amazon.com/images/I/61Qd9Z9caRL._AC_SL1500_.jpg",
+                link: "https://amzn.to/4d4znGl",
+                category: "Accessories",
+                badge: ""
+            },
+            {
+                title: "Amazon Fire HD 8 tablet (newest model)",
+                description: "8” HD Display, 3GB memory, 32GB, designed for portable entertainment, Hibiscus",
+                price: "$99.99",
+                image: "https://m.media-amazon.com/images/I/61hBk5+RW5L._AC_SL1000_.jpg",
+                link: "https://amzn.to/4bBlAEQ",
+                category: "Technology",
+                badge: ""
+            }
+        ];
+
+        // DOM Elements
+        const navbar = document.getElementById('navbar');
+        const categoriesContainer = document.getElementById('categories');
+        const productsGrid = document.getElementById('products-grid');
+        let currentCategory = 'all';
+
+        // Generate unique categories
+        const categories = ['all', ...new Set(products.map(p => p.category))];
+
+        // Render category buttons
+        function renderCategories() {
+            categories.forEach((cat, index) => {
+                if (cat === 'all') return;
+                const btn = document.createElement('button');
+                btn.className = 'category-btn';
+                btn.dataset.category = cat;
+                btn.textContent = cat;
+                categoriesContainer.appendChild(btn);
+            });
+        }
+
+        // Render products
+        function renderProducts(filter = 'all') {
+            productsGrid.innerHTML = '';
+            
+            const filtered = filter === 'all' 
+                ? products 
+                : products.filter(p => p.category === filter);
+
+            if (filtered.length === 0) {
+                productsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <p>No products found in this category.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.style.transitionDelay = `${index * 0.1}s`;
+                
+                card.innerHTML = `
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.title}" loading="lazy" style="object-fit:contain;">
+                        ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+                    </div>
+                    <div class="product-content">
+                        <p class="product-category">${product.category}</p>
+                        <h3 class="product-title">${product.title}</h3>
+                        <p class="product-description">${product.description}</p>
+                        <p class="product-price">${product.price}</p>
+                        <a href="${product.link}" class="product-btn" target="_blank" rel="noopener noreferrer">
+                            View Details
+                        </a>
+                    </div>
+                `;
+                
+                productsGrid.appendChild(card);
+                
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, 50);
+                });
+            });
+        }
+
+        // Event Listeners
+        categoriesContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('category-btn')) {
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                currentCategory = e.target.dataset.category;
+                renderProducts(currentCategory);
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        // Initialize
+        renderCategories();
+        renderProducts();
+    </script>
+</body>
+</html>
